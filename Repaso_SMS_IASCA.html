@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repaso — Sistema de Gestión de la Seguridad Operacional (SMS)</title>
+<style>
+:root{
+  --bg:#f5f3ff;
+  --card:#ffffff;
+  --violet:#7c3aed;
+  --violet-d:#5b21b6;
+  --pink:#ec4899;
+  --cyan:#06b6d4;
+  --orange:#f97316;
+  --green:#16a34a;
+  --red:#dc2626;
+  --ink:#1e1b2e;
+  --ink-soft:#4b4560;
+  --border:#e6e0ff;
+  --shadow: 0 10px 30px rgba(124,58,237,.12);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #fce7f3 0%, transparent 60%),
+    radial-gradient(1000px 500px at 110% 10%, #cffafe 0%, transparent 55%),
+    var(--bg);
+  color:var(--ink);
+  font-family:'Segoe UI', system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  font-size:19px;
+  line-height:1.55;
+}
+h1,h2,h3,h4{font-family:'Segoe UI', system-ui, sans-serif; margin:0 0 .4em 0; line-height:1.2;}
+p{margin:.4em 0 1em 0;}
+
+header.top{
+  background:linear-gradient(120deg,var(--violet) 0%, var(--pink) 55%, var(--orange) 100%);
+  color:#fff;
+  padding:38px 20px 30px;
+  text-align:center;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+header.top::after{
+  content:"";
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 2px, transparent 2px 40px);
+  pointer-events:none;
+}
+header.top .eyebrow{
+  display:inline-block;
+  background:rgba(255,255,255,.22);
+  padding:6px 18px;
+  border-radius:999px;
+  font-weight:700;
+  letter-spacing:.12em;
+  font-size:15px;
+  margin-bottom:14px;
+  backdrop-filter:blur(4px);
+}
+header.top h1{
+  font-size:clamp(28px,5vw,48px);
+  font-weight:900;
+  text-shadow:0 4px 18px rgba(0,0,0,.18);
+  margin-bottom:8px;
+}
+header.top .sub{
+  font-size:19px;
+  font-weight:600;
+  opacity:.95;
+}
+header.top .chips{
+  margin-top:18px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+}
+header.top .chips span{
+  background:rgba(255,255,255,.18);
+  border:2px solid rgba(255,255,255,.4);
+  padding:6px 16px;
+  border-radius:999px;
+  font-size:15px;
+  font-weight:700;
+}
+
+nav.tabs{
+  position:sticky; top:0; z-index:50;
+  background:#ffffffee;
+  backdrop-filter:blur(8px);
+  border-bottom:4px solid var(--violet);
+  display:flex;
+  overflow-x:auto;
+  padding:8px 8px;
+  gap:6px;
+  box-shadow:0 4px 14px rgba(0,0,0,.06);
+}
+nav.tabs button{
+  flex:0 0 auto;
+  border:none;
+  background:#f1edff;
+  color:var(--violet-d);
+  font-weight:800;
+  font-size:15px;
+  padding:12px 15px;
+  border-radius:14px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:.15s;
+}
+nav.tabs button:hover{background:#e4d9ff;}
+nav.tabs button.active{
+  background:linear-gradient(120deg,var(--violet),var(--pink));
+  color:#fff;
+  box-shadow:0 6px 16px rgba(124,58,237,.4);
+  transform:translateY(-1px);
+}
+
+main{max-width:980px; margin:0 auto; padding:30px 18px 90px;}
+section.panel{display:none;}
+section.panel.active{display:block; animation:fade .35s ease;}
+@keyframes fade{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+
+.moduletitle{
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:22px;
+}
+.moduletitle .num{
+  background:linear-gradient(135deg,var(--cyan),var(--violet));
+  color:#fff; font-weight:900; font-size:20px;
+  width:52px; height:52px; border-radius:16px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow); flex-shrink:0;
+}
+.moduletitle h2{font-size:26px; color:var(--violet-d); font-weight:900;}
+.moduletitle .desc{font-size:16px; color:var(--ink-soft); margin-top:2px;}
+
+.card{
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:20px;
+  padding:22px 24px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.card h3{
+  color:var(--pink);
+  font-size:20px;
+  font-weight:900;
+  border-bottom:3px dashed var(--border);
+  padding-bottom:8px;
+  margin-bottom:12px;
+}
+.card h4{color:var(--violet-d); font-size:17px; font-weight:800; margin-top:14px;}
+.card.alt{border-color:#bae6fd; background:#f0fbff;}
+.card.warn{border-color:#fed7aa; background:#fff8f0;}
+.card.ok{border-color:#bbf7d0; background:#f2fff6;}
+
+.tag-row{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0;}
+.tag{
+  background:linear-gradient(120deg,var(--violet),var(--pink));
+  color:#fff; font-weight:800; font-size:13.5px;
+  padding:5px 13px; border-radius:999px;
+}
+.tag.cy{background:linear-gradient(120deg,var(--cyan),#3b82f6);}
+.tag.or{background:linear-gradient(120deg,var(--orange),#ef4444);}
+.tag.gr{background:linear-gradient(120deg,#22c55e,#0ea5e9);}
+
+table{width:100%; border-collapse:collapse; margin:14px 0; font-size:16.5px;}
+th{
+  background:linear-gradient(120deg,var(--violet),var(--pink));
+  color:#fff; text-align:left; padding:10px 12px; font-size:14.5px;
+}
+td{padding:9px 12px; border-bottom:1px solid var(--border);}
+tr:nth-child(even) td{background:#faf8ff;}
+
+ul,ol{padding-left:24px;}
+li{margin-bottom:6px;}
+strong{color:var(--violet-d);}
+.hl{background:linear-gradient(120deg,#fde68a,#fbcfe8); padding:1px 6px; border-radius:6px; font-weight:800;}
+code{background:#efe9ff; padding:2px 7px; border-radius:6px; font-family:'Consolas',monospace; color:var(--violet-d); font-weight:700;}
+em{color:var(--ink-soft);}
+
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+@media(max-width:680px){.grid2{grid-template-columns:1fr;}}
+
+/* TEST */
+#test-intro{
+  background:linear-gradient(120deg,var(--violet),var(--pink),var(--orange));
+  color:#fff; border-radius:22px; padding:28px; text-align:center; box-shadow:var(--shadow);
+}
+#test-intro h2{font-size:28px;}
+#test-intro p{font-size:17px; opacity:.95;}
+#progressWrap{
+  position:sticky; top:66px; z-index:40;
+  background:#ffffffee; backdrop-filter:blur(6px);
+  border:2px solid var(--border); border-radius:16px;
+  padding:12px 18px; margin:18px 0; box-shadow:var(--shadow);
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+}
+#progressBarOuter{flex:1; min-width:160px; background:#efe9ff; border-radius:999px; height:16px; overflow:hidden;}
+#progressBarInner{height:100%; width:0%; background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink)); transition:.3s;}
+#progressText{font-weight:900; color:var(--violet-d); white-space:nowrap;}
+#gradeBtn{
+  border:none; cursor:pointer; font-weight:900; font-size:16px;
+  padding:10px 20px; border-radius:12px; color:#fff;
+  background:linear-gradient(120deg,var(--green),#0ea5e9);
+  opacity:.5; pointer-events:none;
+}
+#gradeBtn.enabled{opacity:1; pointer-events:auto; box-shadow:0 6px 16px rgba(22,163,74,.4);}
+
+.qcard{
+  background:var(--card); border:2px solid var(--border); border-radius:18px;
+  padding:20px 22px; margin-bottom:16px; box-shadow:var(--shadow);
+  transition:.2s;
+}
+.qcard .qhead{display:flex; gap:10px; align-items:flex-start; margin-bottom:12px;}
+.qcard .qnum{
+  flex-shrink:0; width:36px; height:36px; border-radius:10px;
+  background:linear-gradient(135deg,var(--cyan),var(--violet)); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-weight:900; font-size:15px;
+}
+.qcard .qtext{font-weight:700; font-size:18px; color:var(--ink);}
+.qcard .qtype{font-size:12.5px; font-weight:800; color:var(--pink); text-transform:uppercase; letter-spacing:.05em;}
+.options{display:flex; flex-direction:column; gap:9px;}
+.opt{
+  display:flex; align-items:center; gap:10px;
+  border:2px solid var(--border); border-radius:12px; padding:11px 14px;
+  cursor:pointer; font-size:16.5px; background:#fbfaff; transition:.15s;
+}
+.opt:hover{border-color:var(--violet); background:#f3edff;}
+.opt .bullet{
+  width:24px; height:24px; border-radius:7px; border:2px solid var(--violet);
+  flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; color:var(--violet);
+}
+.qcard.locked .opt{cursor:default; pointer-events:none;}
+.qcard.locked .opt:not(.chosen){opacity:.45;}
+.opt.chosen{border-color:var(--violet); background:#ece2ff; font-weight:800;}
+.opt.chosen .bullet{background:var(--violet); color:#fff;}
+
+.qcard.correct{border-color:var(--green); background:#f2fff6;}
+.qcard.incorrect{border-color:var(--red); background:#fff3f3;}
+.opt.correct-answer{border-color:var(--green); background:#dcfce7; font-weight:800;}
+.opt.correct-answer .bullet{background:var(--green); color:#fff;}
+.opt.wrong-answer{border-color:var(--red); background:#fee2e2;}
+.opt.wrong-answer .bullet{background:var(--red); color:#fff;}
+.explain{
+  margin-top:12px; padding:12px 14px; border-radius:12px;
+  background:#f5f3ff; border-left:5px solid var(--violet); font-size:15.5px; color:var(--ink-soft);
+  display:none;
+}
+.qcard.graded .explain{display:block;}
+.badge-result{
+  display:inline-block; font-weight:900; font-size:13px; padding:4px 12px; border-radius:999px; margin-left:8px;
+}
+.badge-result.ok{background:var(--green); color:#fff;}
+.badge-result.bad{background:var(--red); color:#fff;}
+
+#finalScore{
+  display:none; text-align:center; border-radius:22px; padding:30px;
+  color:#fff; box-shadow:var(--shadow); margin:20px 0;
+  background:linear-gradient(120deg,var(--violet),var(--pink),var(--orange));
+}
+#finalScore.show{display:block;}
+#finalScore .big{font-size:50px; font-weight:900;}
+#finalScore .msg{font-size:18px; font-weight:700; margin-top:6px;}
+#retryBtn{
+  margin-top:16px; border:none; cursor:pointer; font-weight:900; font-size:16px;
+  padding:11px 24px; border-radius:12px; background:#fff; color:var(--violet-d);
+}
+.lockNotice{
+  background:#fff8f0; border:2px solid #fed7aa; border-radius:14px; padding:14px 18px;
+  margin-bottom:18px; font-weight:700; color:#9a3412; font-size:15.5px;
+}
+
+footer{text-align:center; color:var(--ink-soft); font-size:14px; padding:20px; opacity:.7;}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="eyebrow">✈️ IASCA · INTER AVIATION SERVICES</span>
+  <h1>Repaso SMS</h1>
+  <div class="sub">Sistema de Gestión de la Seguridad Operacional</div>
+  <div class="chips">
+    <span>4 temas de teoría</span>
+    <span>Modelo SHEL(L) y Reason</span>
+    <span>Gestión del riesgo</span>
+    <span>Test final de 40 preguntas</span>
+  </div>
+</header>
+
+<nav class="tabs" id="tabsNav"></nav>
+
+<main id="mainContent"></main>
+
+<footer>Repaso interactivo — Uso académico · SMS IASCA · 2026</footer>
+
+<script>
+/* =========================================================
+   CONTENIDO DE MÓDULOS (basado en el material SMS de IASCA)
+   ========================================================= */
+const MODULES = [
+{
+  id:"tema1", num:"01", title:"Sistema de Gestión de la Seguridad Operacional (SMS)",
+  desc:"Definiciones, marco normativo, evolución histórica y modelo SHEL(L)",
+  html:`
+  <div class="card">
+    <h3>🎯 1.1 Objetivo del curso</h3>
+    <ul>
+      <li>Que cada participante pueda <strong>definir las características de un SMS</strong>, explicar la importancia de la descripción del sistema y el análisis de carencias para mitigar riesgos de forma <strong>proactiva</strong>, antes de que ocurra un incidente o accidente.</li>
+      <li>Que sea capaz de <strong>identificar diferentes tipos de peligros</strong> dentro y fuera de su ambiente de trabajo.</li>
+      <li>Que se convierta en un <strong>gestor de riesgos</strong>, especialmente durante la entrega de servicios o productos.</li>
+    </ul>
+  </div>
+
+  <div class="card alt">
+    <h3>📘 1.2 Sistema de Gestión de la Seguridad Operacional (SMS)</h3>
+    <p>Un <strong>Safety Management System</strong> es un <strong>enfoque sistemático</strong> para la gestión de la seguridad operacional que incluye políticas, estructura institucional, líneas de responsabilidad y procedimientos, orientados a mantener un control específico sobre la <strong>identificación de peligros</strong> y la <strong>gestión del riesgo</strong>.</p>
+    <p>Su propósito es <strong>mejorar continuamente</strong> el rendimiento de la seguridad operacional: identificando peligros, recopilando y analizando datos, y evaluando los riesgos de forma constante.</p>
+  </div>
+
+  <div class="card">
+    <h3>🧩 1.3 Definición de sistema y gestión</h3>
+    <p><strong>Sistema:</strong> conjunto de partes que trabajan para lograr un objetivo común, o conjunto de elementos interrelacionados.</p>
+    <div class="tag-row">
+      <span class="tag">Natural — ej. un ave, un humano</span>
+      <span class="tag cy">Artificial — ej. un avión</span>
+      <span class="tag or">Social — ej. una empresa</span>
+    </div>
+    <p><strong>Gestión:</strong> acción o trámite que se lleva a cabo, junto con otros, para conseguir o resolver algo. Requiere conciencia, esfuerzo, recursos y buena voluntad.</p>
+    <p><strong>Seguridad operacional:</strong> el estado en que el riesgo de lesiones a personas o daños a bienes se reduce y se mantiene en un nivel aceptable (o por debajo), mediante un proceso continuo de identificación de peligros y gestión de riesgos.</p>
+    <p><strong>Programa de Seguridad del Estado (SSP):</strong> conjunto integrado de reglamentos, normas, procedimientos y actividades orientadas a mejorar la seguridad operacional. Cada Estado es responsable de implementarlo mediante reglamentos, investigación de accidentes/incidentes, garantía y promoción de la seguridad.</p>
+    <p><strong>Encargado de Seguridad Operacional / Gerente Responsable:</strong> es el responsable individual y punto focal de la implementación y mantenimiento de un SMS efectivo dentro de la organización.</p>
+    <p><strong>Lema de la filosofía de gestión de seguridad:</strong> <span class="hl">"Mantener los riesgos tan bajo como sea razonablemente posible"</span>.</p>
+  </div>
+
+  <div class="card ok">
+    <h3>🏛️ 1.4 Organismos que regulan el SMS</h3>
+    <p>El SMS es un estándar reconocido a nivel global por la <strong>OACI</strong> (Organización de Aviación Civil Internacional) y a nivel local, en República Dominicana, por el <strong>IDAC</strong> (Instituto Dominicano de Aviación Civil).</p>
+    <table>
+      <tr><th>Nivel</th><th>Norma</th></tr>
+      <tr><td>Internacional (OACI)</td><td>Doc. 9859 y Anexo 19</td></tr>
+      <tr><td>Local (República Dominicana)</td><td>RAD 110, publicado el 10/10/2008</td></tr>
+    </table>
+  </div>
+
+  <div class="card warn">
+    <h3>⏳ 1.5 Evolución del pensamiento en materia de seguridad</h3>
+    <p>El progreso de la seguridad operacional en aviación se divide en tres épocas:</p>
+    <table>
+      <tr><th>Época</th><th>Periodo</th><th>Enfoque</th></tr>
+      <tr><td><strong>Factores técnicos</strong></td><td>1950–1970</td><td>Reactivo — mejoras tecnológicas y cumplimiento de regulaciones</td></tr>
+      <tr><td><strong>Factores humanos</strong></td><td>1970–1990</td><td>Reactivo y proactivo — interfaz hombre-máquina, error humano (James T. Reason)</td></tr>
+      <tr><td><strong>Factores institucionales/organizacionales</strong></td><td>1990–actualidad</td><td>Predictivo — basado en evidencias y trabajo real, "accidente institucional"</td></tr>
+    </table>
+    <p>James T. Reason plantea que el <strong>error humano es inherente al ser humano</strong> y "va a existir siempre", especialmente en industrias de alto riesgo; el reto no es eliminarlo, sino <strong>aprender a reducir su impacto</strong>.</p>
+  </div>
+
+  <div class="card">
+    <h3>🧀 1.6 Concepto de causalidad y modelo SHEL(L)</h3>
+    <p><strong>Causalidad:</strong> relación entre dos variables donde un cambio en una va seguido de un cambio en la otra.</p>
+    <p>El <strong>modelo de Reason</strong> (conocido como "modelo del queso suizo") explica cómo distintas <strong>condiciones latentes</strong> — en el lugar de trabajo, las personas y la organización — se alinean con fallas en las <strong>defensas</strong> del sistema (tecnología, entrenamiento, reglamentación), permitiendo que ocurra un accidente.</p>
+    <h4>Modelo SHEL(L)</h4>
+    <p>Herramienta conceptual para analizar la interacción de los componentes del sistema de aviación:</p>
+    <div class="tag-row">
+      <span class="tag">S — Software: procedimientos, reglamentos, documentación</span>
+      <span class="tag cy">H — Hardware: equipos, máquina, radares</span>
+      <span class="tag or">E — Environment: entorno, cultura, meteorología</span>
+      <span class="tag gr">L — Liveware: las personas (tripulación, mecánicos, gerentes)</span>
+    </div>
+    <p>El <strong>Liveware</strong> es el elemento central: considera la conducta humana, las relaciones humanas y los factores fisiológicos.</p>
+  </div>
+  `
+},
+{
+  id:"tema2", num:"02", title:"Prevención de Accidentes (OACI)",
+  desc:"Conceptos de accidente, incidente, peligro, consecuencia, riesgo y cultura",
+  html:`
+  <div class="card">
+    <h3>🛡️ 2.1 Concepto de Prevención de Accidentes (OACI)</h3>
+    <p>Es la <strong>localización, detección y evaluación del peligro</strong>, junto con la elaboración de métodos y recomendaciones apropiadas, y la adopción de medidas para <strong>minimizar o evitar</strong> los accidentes e incidentes de aviación.</p>
+  </div>
+
+  <div class="card alt">
+    <h3>✈️ 2.2 Concepto de Accidente Aéreo</h3>
+    <p>Suceso ocurrido en la operación de una aeronave tripulada, entre el momento en que una persona <strong>entra a bordo con intención de volar</strong> y el momento en que <strong>todas las personas han desembarcado</strong> (o en aeronaves no tripuladas, desde que está lista para moverse hasta que se apaga el sistema de propulsión), durante el cual ocurre alguno de los siguientes:</p>
+    <ol>
+      <li>Una persona sufre <strong>lesiones mortales o graves</strong> por estar en la aeronave, por contacto con partes de esta, o por exposición a gases calientes de un motor (excepto causas naturales, autolesión, lesiones causadas por terceros, o pasajeros clandestinos fuera de áreas normales).</li>
+      <li>La aeronave sufre <strong>daños que afectan su resistencia estructural</strong>, performance o características de vuelo, que exigen reparación importante o recambio (excepto fallas menores de motor, hélices, antenas, neumáticos o frenos).</li>
+      <li>La aeronave <strong>desaparece</strong> o queda totalmente <strong>inaccesible</strong>.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>⚠️ 2.3 Concepto de Incidente Aéreo</h3>
+    <p>Según la OACI: <span class="hl">"Todo suceso relacionado con la utilización de una aeronave que no llegue a ser un accidente, que afecte o pueda afectar la seguridad de las operaciones."</span></p>
+    <p>Los accidentes son la consecuencia de una <strong>cadena de eventos</strong>, no de una sola causa aislada.</p>
+  </div>
+
+  <div class="card ok">
+    <h3>🧷 2.4 Concepto de peligro, consecuencia y riesgo</h3>
+    <p><strong>Peligro:</strong> condición u objeto con el potencial de matar, causar lesiones, dañar equipo o estructuras, perder material o reducir la capacidad de realizar funciones prescritas.</p>
+    <p><strong>Consecuencia:</strong> resultado potencial de un peligro.</p>
+    <p><strong>Riesgo:</strong> la evaluación de las consecuencias de un peligro, expresada en términos de <strong>probabilidad y gravedad</strong>, tomando como referencia la peor condición previsible.</p>
+    <p><em>Ejemplo del material:</em> un viento cruzado de 15 nudos es un <strong>peligro</strong>; que el piloto no pueda controlar la aeronave al despegar o aterrizar es la <strong>consecuencia</strong>; evaluar esa posibilidad en términos de probabilidad y severidad es el <strong>riesgo</strong>.</p>
+  </div>
+
+  <div class="card warn">
+    <h3>🌍 2.5 Cultura</h3>
+    <p>La cultura reúne a las personas como miembros de un grupo y da pautas de comportamiento en situaciones normales e inusuales, influyendo en su modo de pensar y actuar.</p>
+    <table>
+      <tr><th>Tipo de cultura</th><th>Qué diferencia</th></tr>
+      <tr><td><strong>Nacional</strong></td><td>El sistema de valores de cada nación</td></tr>
+      <tr><td><strong>Organizacional / Corporativa</strong></td><td>Valores y comportamientos entre organizaciones (ej. gobierno vs. privadas)</td></tr>
+      <tr><td><strong>Profesional</strong></td><td>Valores y comportamiento de grupos profesionales (pilotos, TCP, controladores, mecánicos, etc.)</td></tr>
+    </table>
+    <p>Ningún emprendimiento humano está libre de influencias culturales.</p>
+  </div>
+  `
+},
+{
+  id:"tema3", num:"03", title:"Metodologías de Identificación de Peligros",
+  desc:"Gestión reactiva, preventiva, proactiva y predictiva; error, infracción, investigación y mitigación",
+  html:`
+  <div class="card">
+    <h3>🔍 3.1 Gestión del riesgo</h3>
+    <p>Existen <strong>cuatro metodologías</strong> para identificar peligros:</p>
+    <div class="tag-row">
+      <span class="tag">Reactiva</span>
+      <span class="tag cy">Preventiva</span>
+      <span class="tag or">Proactiva</span>
+      <span class="tag gr">Predictiva</span>
+    </div>
+  </div>
+
+  <div class="card alt">
+    <h3>⏮️ 3.2 Gestión de la Seguridad Reactiva</h3>
+    <p>Analiza <strong>resultados o eventos pasados</strong>. Los peligros se identifican mediante la investigación de sucesos ya ocurridos (incidentes y accidentes), que son indicadores claros de deficiencias del sistema.</p>
+    <ul>
+      <li>Investigación de accidentes e incidentes serios.</li>
+      <li>Se basa en <strong>esperar a que el sistema "se dañe"</strong> para corregirlo.</li>
+      <li>Apropiada para fallas de tecnología y eventos inusuales.</li>
+      <li>Su valor depende de la <strong>profundidad de la investigación</strong>, más allá de las causas inmediatas.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>🛠️ 3.3 Gestión de la Seguridad Preventiva</h3>
+    <p>Incluye organización, material de protección, nombramientos y formación. Sobre todo, implica que la organización <strong>asigne responsabilidades</strong> a sus empleados, dote de medios, evalúe el cumplimiento y tome <strong>acciones correctoras</strong>.</p>
+  </div>
+
+  <div class="card ok">
+    <h3>🔎 3.4 Gestión de la Seguridad Proactiva</h3>
+    <p>Analiza <strong>situaciones existentes o en tiempo real</strong>: auditorías, evaluaciones, notificación de empleados y procesos de análisis asociados. Implica la <strong>búsqueda activa</strong> de peligros en los procesos actuales.</p>
+    <ul>
+      <li>Sistemas de reportes mandatorios y voluntarios, auditorías y encuestas de seguridad.</li>
+      <li>Se basa en la idea de que las fallas se pueden <strong>minimizar identificando riesgos antes</strong> de que el sistema falle.</li>
+    </ul>
+  </div>
+
+  <div class="card warn">
+    <h3>🔮 3.5 Gestión de la Seguridad Predictiva</h3>
+    <p>Implica la <strong>recopilación de datos</strong> para identificar resultados o eventos futuros posiblemente negativos, el análisis del sistema y del entorno, y el inicio de medidas de mitigación.</p>
+    <ul>
+      <li>Sistemas de reporte confidenciales, análisis de datos de vuelo y vigilancia de operaciones normales.</li>
+      <li>Se basa en <strong>salir a buscar los problemas</strong>, no esperar a que se produzcan.</li>
+      <li>Búsqueda agresiva de información de distintas fuentes para revelar riesgos emergentes.</li>
+    </ul>
+    <table>
+      <tr><th>Método</th><th>Idea central</th></tr>
+      <tr><td>Reactivo</td><td>Responde a eventos que ya ocurrieron</td></tr>
+      <tr><td>Preventivo</td><td>Asigna responsabilidades y corrige</td></tr>
+      <tr><td>Proactivo</td><td>Busca activamente riesgos potenciales</td></tr>
+      <tr><td>Predictivo</td><td>Documenta el desempeño y lo que realmente ocurre a diario</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>📚 3.6 Documentación de los peligros</h3>
+    <p>Es el <strong>procedimiento formal</strong> para transformar datos de seguridad operacional en información relacionada con los peligros, estableciendo la <strong>"biblioteca de seguridad operacional"</strong> de la organización. Se facilita con estandarización en: definiciones, comprensión, aplicación, reporte, medición y gestión.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card ok">
+      <h4 style="margin-top:0">❌ 3.7 El Error</h4>
+      <p>Acción <strong>no intencional</strong> que produce un efecto adverso al esperado.</p>
+      <p><strong>Confusiones/omisiones:</strong> fallas en la ejecución (ej. accionar flaps en vez del tren de aterrizaje, olvidar un checklist).</p>
+      <p><strong>Equivocaciones:</strong> fallas en el plan de acción mismo.</p>
+    </div>
+    <div class="card warn">
+      <h4 style="margin-top:0">🚫 3.8 Infracción</h4>
+      <p>Acción <strong>consciente y deliberada</strong>, contraria al comportamiento esperado: un acto deliberado de conducta impropia u omisión que desvía los reglamentos, procedimientos o normas establecidas (Doc. 9854).</p>
+    </div>
+  </div>
+
+  <div class="card alt">
+    <h3>🕵️ 3.9 Investigación</h3>
+    <p>Proceso que busca <strong>prevenir accidentes</strong>, comprendiendo la reunión y análisis de información, la obtención de conclusiones (incluyendo causas) y, cuando proceda, recomendaciones de seguridad.</p>
+  </div>
+
+  <div class="card ok">
+    <h3>⚡ 3.10 Peligro y Mitigación</h3>
+    <p><strong>Peligro:</strong> para que exista, deben darse sus <strong>componentes</strong> (lo que lo hace peligroso) y sus <strong>consecuencias</strong> (los daños o lesiones que puede ocasionar).</p>
+    <p><strong>Mitigación:</strong> medidas que <strong>eliminan el peligro potencial</strong> o que reducen la probabilidad o gravedad del riesgo.</p>
+  </div>
+  `
+},
+{
+  id:"tema4", num:"04", title:"Gestión del Riesgo",
+  desc:"Definición de riesgo, matrices de probabilidad y gravedad",
+  html:`
+  <div class="card">
+    <h3>📊 4.1 Gestión del Riesgo</h3>
+    <p>Es la <strong>identificación, análisis y/o mitigación</strong> de los riesgos que amenazan las capacidades de una organización, hasta llevarlos a un <strong>nivel aceptable</strong>.</p>
+  </div>
+
+  <div class="card alt">
+    <h3>⚖️ 4.2 Riesgo</h3>
+    <p>Es la <strong>probabilidad y gravedad proyectada</strong> de la consecuencia o resultado de una situación o peligro existente.</p>
+  </div>
+
+  <div class="card">
+    <h3>🎲 4.3 Probabilidad del Riesgo</h3>
+    <p>Es la posibilidad de que un evento o condición insegura <strong>pueda ocurrir</strong>.</p>
+    <table>
+      <tr><th>Valor</th><th>Nivel</th><th>Descripción</th></tr>
+      <tr><td><strong>A</strong></td><td>Frecuente</td><td>Se espera que ocurra en la mayoría de las circunstancias</td></tr>
+      <tr><td><strong>B</strong></td><td>Ocasional</td><td>Probablemente ocurrirá en algún momento (ha ocurrido infrecuentemente)</td></tr>
+      <tr><td><strong>C</strong></td><td>Remoto</td><td>Podría ocurrir en algún momento (ha ocurrido raramente)</td></tr>
+      <tr><td><strong>D</strong></td><td>Improbable</td><td>Muy improbable que ocurra (no se sabe que haya ocurrido)</td></tr>
+      <tr><td><strong>E</strong></td><td>Excepcional</td><td>Es casi inconcebible que suceda el evento</td></tr>
+    </table>
+  </div>
+
+  <div class="card ok">
+    <h3>💥 4.4 Gravedad del Riesgo</h3>
+    <p>Son los posibles efectos de un evento o condición insegura, tomando como referencia la <strong>peor condición previsible</strong>.</p>
+    <table>
+      <tr><th>Valor</th><th>Nivel</th><th>Descripción</th></tr>
+      <tr><td><strong>1</strong></td><td>Insignificante</td><td>Sin consecuencias significativas para la seguridad operacional</td></tr>
+      <tr><td><strong>2</strong></td><td>Menor</td><td>Degrada o afecta procedimientos normales de vuelo o el desempeño</td></tr>
+      <tr><td><strong>3</strong></td><td>Moderado</td><td>Pérdida parcial de sistemas mayores; procedimientos de vuelo anormales</td></tr>
+      <tr><td><strong>4</strong></td><td>Mayor</td><td>Fallo completo de sistemas mayores; procedimientos de emergencia</td></tr>
+      <tr><td><strong>5</strong></td><td>Catastrófico</td><td>Pérdida de la aeronave y/o vidas</td></tr>
+    </table>
+  </div>
+
+  <div class="card warn">
+    <h3>🧮 Cómo se combinan</h3>
+    <p>El <strong>riesgo</strong> se determina cruzando la <strong>probabilidad</strong> (A-E) con la <strong>gravedad</strong> (1-5) de un peligro, para definir si el nivel de riesgo es aceptable, tolerable (requiere mitigación) o inaceptable, y así priorizar las acciones de mitigación.</p>
+  </div>
+  `
+}
+];
+
+/* =========================================================
+   PREGUNTAS DEL TEST (20 selección múltiple + 20 V/F)
+   ========================================================= */
+const QUESTIONS = [
+{type:"mc", q:"¿Qué es un Sistema de Gestión de la Seguridad Operacional (SMS)?",
+ options:["Un manual exclusivo para pilotos", "Un enfoque sistemático que incluye políticas, estructura, responsabilidades y procedimientos para gestionar peligros y riesgos", "Un software de mantenimiento de aeronaves", "Un seguro contra accidentes aéreos"], correct:1,
+ exp:"El SMS es un enfoque sistemático para la gestión de la seguridad operacional, con políticas, estructura institucional, líneas de responsabilidad y procedimientos."},
+
+{type:"mc", q:"¿Cuál es el propósito principal de un SMS?",
+ options:["Reducir costos operativos de la aerolínea", "Mejorar continuamente el rendimiento de la seguridad operacional identificando peligros y evaluando riesgos", "Sustituir las investigaciones de accidentes", "Certificar pilotos nuevos"], correct:1,
+ exp:"El SMS busca mejorar continuamente la seguridad operacional mediante la identificación de peligros y evaluación constante de riesgos."},
+
+{type:"mc", q:"Según el material, ¿cuál de los siguientes es un ejemplo de sistema artificial?",
+ options:["Un ave", "Un ser humano", "Un avión", "Una selva"], correct:2,
+ exp:"Un avión es un ejemplo de sistema artificial, a diferencia de un ave o un humano (sistemas naturales) o una empresa (sistema social)."},
+
+{type:"mc", q:"¿Qué establece el Programa de Seguridad del Estado (SSP)?",
+ options:["Los precios de los boletos aéreos", "El conjunto integrado de reglamentos, normas y actividades orientadas a mejorar la seguridad operacional", "Las rutas comerciales autorizadas", "Los horarios de vuelo internacionales"], correct:1,
+ exp:"El SSP es el conjunto integrado de reglamentos, normas, procedimientos y actividades para mejorar la seguridad operacional; cada Estado es responsable de implementarlo."},
+
+{type:"mc", q:"¿En qué periodo se ubica la época de 'Factores Técnicos' en la evolución del pensamiento de seguridad?",
+ options:["1990 a la actualidad", "1970 a 1990", "1950 a 1970", "2000 a 2010"], correct:2,
+ exp:"La época de Factores Técnicos abarca de 1950 a 1970, enfocada en fallas tecnológicas y cumplimiento de regulaciones."},
+
+{type:"mc", q:"¿Quién es reconocido como el mayor experto internacional en Error Humano y cultura de seguridad, según el material?",
+ options:["James T. Reason", "Charles Lindbergh", "Wilbur Wright", "Chuck Yeager"], correct:0,
+ exp:"James T. Reason es citado como el mayor experto internacional en error humano y cultura de seguridad."},
+
+{type:"mc", q:"¿Qué plantea la teoría de James Reason sobre el error humano?",
+ options:["Que puede eliminarse por completo con suficiente entrenamiento", "Que es inherente al ser humano y siempre existirá, por lo que el reto es reducir su impacto", "Que solo ocurre en pilotos sin experiencia", "Que no tiene relación con la seguridad aérea"], correct:1,
+ exp:"Reason plantea que el error humano es inherente y siempre existirá; el reto es aprender a reducir su impacto, no eliminarlo por completo."},
+
+{type:"mc", q:"En el modelo SHEL(L), ¿qué representa la letra 'L' de Liveware?",
+ options:["Los manuales de operaciones", "El entorno y la meteorología", "Las personas que interactúan entre sí y con los equipos", "Los sistemas de radar y comunicación"], correct:2,
+ exp:"Liveware son las personas —tripulación, mecánicos, controladores, gerentes— que interactúan entre sí y con el resto del sistema."},
+
+{type:"mc", q:"¿Qué componente del modelo SHEL(L) corresponde a los procedimientos, reglamentos y documentación?",
+ options:["Hardware", "Software", "Environment", "Liveware"], correct:1,
+ exp:"El Software (S) del modelo SHEL(L) corresponde a procedimientos, reglamentos, información y documentación."},
+
+{type:"mc", q:"¿Cuál es la diferencia entre un accidente aéreo y un incidente aéreo según la OACI?",
+ options:["No hay diferencia, son sinónimos", "El accidente involucra lesiones graves, daños estructurales importantes o pérdida de la aeronave; el incidente afecta la seguridad sin llegar a ese nivel", "El incidente siempre es más grave que el accidente", "El accidente solo aplica a aeronaves no tripuladas"], correct:1,
+ exp:"El accidente involucra lesiones graves/mortales, daños estructurales significativos o pérdida de la aeronave; el incidente afecta o puede afectar la seguridad sin llegar a ese nivel."},
+
+{type:"mc", q:"Un viento cruzado de 15 nudos es un peligro. La posibilidad de que el piloto no controle la aeronave al aterrizar es:",
+ options:["El riesgo", "La consecuencia del peligro", "La mitigación", "La investigación"], correct:1,
+ exp:"Según el ejemplo del material, esa posibilidad es la consecuencia; evaluarla en términos de probabilidad y severidad es lo que constituye el riesgo."},
+
+{type:"mc", q:"¿Cuál de las siguientes NO es una de las tres culturas descritas en el material?",
+ options:["Cultura Nacional", "Cultura Organizacional o Corporativa", "Cultura Profesional", "Cultura Individual"], correct:3,
+ exp:"El material describe tres culturas: Nacional, Organizacional/Corporativa y Profesional. 'Cultura Individual' no forma parte de esa clasificación."},
+
+{type:"mc", q:"¿Cuál metodología de identificación de peligros se basa en 'esperar hasta que el sistema se dañe' para arreglarlo?",
+ options:["Gestión Predictiva", "Gestión Proactiva", "Gestión Reactiva", "Gestión Preventiva"], correct:2,
+ exp:"La Gestión de la Seguridad Reactiva analiza eventos ya ocurridos, basándose en la investigación posterior al daño del sistema."},
+
+{type:"mc", q:"¿Qué caracteriza principalmente a la Gestión de la Seguridad Proactiva?",
+ options:["Espera a que ocurra un accidente para investigar", "Analiza situaciones existentes en tiempo real mediante auditorías y búsqueda activa de peligros", "Solo se aplica después de un incidente grave", "Se enfoca exclusivamente en el mantenimiento de motores"], correct:1,
+ exp:"La Gestión Proactiva implica el análisis de situaciones en tiempo real, con auditorías, evaluaciones y búsqueda activa de peligros en procesos existentes."},
+
+{type:"mc", q:"¿Cuál es la idea central de la Gestión de la Seguridad Predictiva?",
+ options:["Reaccionar únicamente ante accidentes ya investigados", "Recopilar datos para identificar posibles eventos futuros negativos y actuar antes de que ocurran", "Asignar responsabilidades después de un incidente", "Enfocarse solo en factores técnicos de los años 50"], correct:1,
+ exp:"La Gestión Predictiva recopila datos para identificar posibles resultados negativos futuros y tomar medidas de mitigación de forma anticipada."},
+
+{type:"mc", q:"Según el material, ¿cuál es la diferencia entre una 'confusión' y una 'equivocación' dentro del concepto de Error?",
+ options:["Son exactamente lo mismo", "La confusión es una falla en la ejecución; la equivocación es una falla en el plan de acción mismo", "La confusión solo ocurre en tierra y la equivocación en vuelo", "La equivocación es intencional y la confusión no"], correct:1,
+ exp:"La confusión es una falla en la ejecución de una acción planificada; la equivocación es una falla en el plan mismo, aunque se ejecute correctamente."},
+
+{type:"mc", q:"¿Qué diferencia principal existe entre un Error y una Infracción?",
+ options:["No existe diferencia entre ambos conceptos", "El error es una acción no intencional; la infracción es una acción consciente y deliberada contraria al comportamiento esperado", "La infracción siempre es accidental", "El error solo lo cometen los pasajeros"], correct:1,
+ exp:"El error es no intencional (falla involuntaria); la infracción es un acto consciente y deliberado que se desvía de reglamentos o normas establecidas."},
+
+{type:"mc", q:"¿Qué debe existir, según el material, para que una condición u objeto sea considerado un peligro?",
+ options:["Solo sus componentes, sin importar las consecuencias", "Únicamente que haya ocurrido un accidente previo", "Sus componentes y sus consecuencias", "Que esté documentado en el Doc. 9854"], correct:2,
+ exp:"Para que una condición u objeto sea un peligro deben existir tanto sus componentes (lo que lo hace peligroso) como sus consecuencias (los daños posibles)."},
+
+{type:"mc", q:"En la matriz de probabilidad del riesgo, ¿qué nivel corresponde al valor 'C'?",
+ options:["Frecuente", "Ocasional", "Remoto", "Excepcional"], correct:2,
+ exp:"El valor C corresponde al nivel 'Remoto': podría ocurrir en algún momento, pero ha ocurrido raramente."},
+
+{type:"mc", q:"Según la escala de gravedad del riesgo, ¿qué valor corresponde a 'pérdida de la aeronave y/o vidas'?",
+ options:["Valor 2 — Menor", "Valor 3 — Moderado", "Valor 4 — Mayor", "Valor 5 — Catastrófico"], correct:3,
+ exp:"El valor 5 corresponde al nivel Catastrófico: pérdida de la aeronave y/o vidas."},
+
+{type:"vf", q:"El SMS incluye políticas, estructura institucional, líneas de responsabilidad y procedimientos para gestionar peligros y riesgos.",
+ correct:true, exp:"Correcto. Esa es precisamente la definición de SMS presentada en el material."},
+
+{type:"vf", q:"El propósito del SMS es reemplazar completamente la necesidad de investigar accidentes.",
+ correct:false, exp:"Falso. El SMS busca mejorar continuamente la seguridad identificando peligros y evaluando riesgos; no elimina la necesidad de investigar accidentes."},
+
+{type:"vf", q:"Un avión es un ejemplo de sistema social según la clasificación del material.",
+ correct:false, exp:"Falso. Un avión es un ejemplo de sistema artificial; una empresa sería un ejemplo de sistema social."},
+
+{type:"vf", q:"El lema de la filosofía de gestión de seguridad es 'Eliminar todos los riesgos sin excepción'.",
+ correct:false, exp:"Falso. El lema real es 'Mantener los riesgos tan bajo como sea razonablemente posible', reconociendo que el riesgo cero no es realista."},
+
+{type:"vf", q:"A nivel local, en República Dominicana, el SMS está regulado por el RAD 110.",
+ correct:true, exp:"Correcto. El RAD 110, publicado el 10/10/2008, regula el SMS a nivel local en República Dominicana."},
+
+{type:"vf", q:"La época de 'Factores Humanos' en la evolución del pensamiento de seguridad se ubica entre 1970 y 1990.",
+ correct:true, exp:"Correcto. La época de Factores Humanos comprende de 1970 a 1990."},
+
+{type:"vf", q:"Según James Reason, el error humano puede eliminarse por completo con suficiente entrenamiento.",
+ correct:false, exp:"Falso. Reason plantea que el error humano es inherente al ser humano y siempre existirá; el reto es reducir su impacto, no eliminarlo."},
+
+{type:"vf", q:"En el modelo SHEL(L), la 'E' de Environment se refiere únicamente a los equipos físicos de la aeronave.",
+ correct:false, exp:"Falso. La 'E' se refiere al ambiente, entorno, cultura organizacional y meteorología; los equipos físicos corresponden al Hardware (H)."},
+
+{type:"vf", q:"El modelo de Reason también es conocido como el 'modelo del queso suizo'.",
+ correct:true, exp:"Correcto. El modelo de Reason es popularmente conocido como el modelo del queso suizo, por la forma en que representa las defensas del sistema."},
+
+{type:"vf", q:"Un accidente aéreo, según la OACI, puede incluir la desaparición total de la aeronave.",
+ correct:true, exp:"Correcto. Uno de los criterios de accidente aéreo es que la aeronave desaparezca o quede totalmente inaccesible."},
+
+{type:"vf", q:"Un incidente aéreo, según la definición de la OACI, siempre implica lesiones mortales o graves.",
+ correct:false, exp:"Falso. El incidente es un suceso que afecta o puede afectar la seguridad de las operaciones sin llegar a ser un accidente; no necesariamente implica lesiones mortales o graves."},
+
+{type:"vf", q:"El riesgo se expresa en términos de probabilidad y gravedad, tomando como referencia la peor condición previsible.",
+ correct:true, exp:"Correcto. Esa es la definición de riesgo presentada en el material."},
+
+{type:"vf", q:"La Cultura Profesional diferencia los valores y comportamientos entre distintas naciones.",
+ correct:false, exp:"Falso. Eso corresponde a la Cultura Nacional. La Cultura Profesional diferencia valores y comportamientos entre grupos profesionales (pilotos, TCP, mecánicos, etc.)."},
+
+{type:"vf", q:"La Gestión de la Seguridad Preventiva incluye asignar responsabilidades, dotar de medios y tomar acciones correctoras.",
+ correct:true, exp:"Correcto. La Gestión Preventiva implica organización, asignación de responsabilidades, medios, evaluación de cumplimiento y acciones correctoras."},
+
+{type:"vf", q:"La Gestión de la Seguridad Predictiva se basa en esperar a que ocurran los problemas antes de actuar.",
+ correct:false, exp:"Falso. La Gestión Predictiva se basa en salir a buscar los problemas de forma anticipada, no en esperar a que se produzcan."},
+
+{type:"vf", q:"Una omisión, dentro del concepto de Error, se define como una falla de memoria, como olvidar una lista de verificación.",
+ correct:true, exp:"Correcto. El material da como ejemplo de omisión el olvidar una lista de verificación, clasificándola como falla de memoria."},
+
+{type:"vf", q:"La documentación de los peligros no tiene relación con la gestión de riesgos de una organización.",
+ correct:false, exp:"Falso. La documentación de los peligros es parte esencial del proceso de Gestión de Riesgos, formando la 'biblioteca de seguridad operacional' de la organización."},
+
+{type:"vf", q:"Según la matriz de probabilidad del riesgo, el valor 'A' corresponde al nivel 'Frecuente'.",
+ correct:true, exp:"Correcto. El valor A corresponde a 'Frecuente': se espera que ocurra en la mayoría de las circunstancias."},
+
+{type:"vf", q:"Un valor de gravedad '2 — Menor' implica la pérdida completa de la aeronave.",
+ correct:false, exp:"Falso. El valor 2 (Menor) implica que se degradan o afectan los procedimientos normales de vuelo, no la pérdida de la aeronave (eso corresponde al valor 5, Catastrófico)."},
+
+{type:"vf", q:"La Gestión del Riesgo busca llevar los riesgos que amenazan a una organización a un nivel aceptable, no necesariamente eliminarlos por completo.",
+ correct:true, exp:"Correcto. La Gestión del Riesgo busca identificar, analizar y/o mitigar los riesgos hasta un nivel aceptable, no la eliminación absoluta."}
+];
+
+/* =========================================================
+   RENDER: TABS + MÓDULOS
+   ========================================================= */
+const nav = document.getElementById("tabsNav");
+const main = document.getElementById("mainContent");
+
+MODULES.forEach((m,i)=>{
+  const btn=document.createElement("button");
+  btn.textContent=m.num+" · "+m.title;
+  btn.dataset.target=m.id;
+  btn.onclick=()=>showPanel(m.id);
+  nav.appendChild(btn);
+
+  const sec=document.createElement("section");
+  sec.className="panel"; sec.id="panel-"+m.id;
+  sec.innerHTML=`
+    <div class="moduletitle">
+      <div class="num">${m.num}</div>
+      <div><h2>${m.title}</h2><div class="desc">${m.desc}</div></div>
+    </div>
+    ${m.html}`;
+  main.appendChild(sec);
+});
+
+// Tab de Test
+const testBtn=document.createElement("button");
+testBtn.textContent="⚡ TEST FINAL";
+testBtn.dataset.target="test";
+testBtn.onclick=()=>showPanel("test");
+nav.appendChild(testBtn);
+
+const testSec=document.createElement("section");
+testSec.className="panel"; testSec.id="panel-test";
+testSec.innerHTML=`
+  <div id="test-intro">
+    <h2>⚡ Evaluación Final — 40 Preguntas</h2>
+    <p>20 de selección múltiple y 20 de verdadero/falso, sobre los 4 temas del curso SMS.</p>
+    <p><strong>Una vez elijas una respuesta, quedará bloqueada</strong> — no podrás cambiarla hasta terminar todo el test.</p>
+  </div>
+  <div class="lockNotice">🔒 Cada respuesta se bloquea al seleccionarla. No verás si acertaste hasta calificar el test completo.</div>
+  <div id="progressWrap">
+    <div id="progressText">0 / 40 respondidas</div>
+    <div id="progressBarOuter"><div id="progressBarInner"></div></div>
+    <button id="gradeBtn">✓ Calificar Examen</button>
+  </div>
+  <div id="finalScore"></div>
+  <div id="questionsWrap"></div>
+`;
+main.appendChild(testSec);
+
+function showPanel(id){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
+  document.getElementById("panel-"+id).classList.add("active");
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.classList.toggle("active", b.dataset.target===id));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+showPanel(MODULES[0].id);
+
+/* =========================================================
+   MOTOR DEL TEST
+   ========================================================= */
+function shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+const runtimeQ = QUESTIONS.map((q,idx)=>{
+  if(q.type==="mc"){
+    const idxArr = q.options.map((opt,i)=>({opt,orig:i}));
+    const shuffled = shuffle(idxArr);
+    const newCorrect = shuffled.findIndex(o=>o.orig===q.correct);
+    return {...q, options:shuffled.map(o=>o.opt), correct:newCorrect, answered:false, chosen:null, id:idx};
+  } else {
+    const flip = Math.random()<0.5;
+    const opts = flip ? ["Falso","Verdadero"] : ["Verdadero","Falso"];
+    const correctLabel = q.correct ? "Verdadero" : "Falso";
+    const newCorrect = opts.indexOf(correctLabel);
+    return {...q, options:opts, correct:newCorrect, answered:false, chosen:null, id:idx};
+  }
+});
+
+const qWrap = document.getElementById("questionsWrap");
+const progressText = document.getElementById("progressText");
+const progressBarInner = document.getElementById("progressBarInner");
+const gradeBtn = document.getElementById("gradeBtn");
+let graded=false;
+
+renderQuestions();
+
+function renderQuestions(){
+  qWrap.innerHTML="";
+  runtimeQ.forEach((q,qi)=>{
+    const card=document.createElement("div");
+    card.className="qcard"; card.id="q-"+qi;
+    card.innerHTML=`
+      <div class="qhead">
+        <div class="qnum">${qi+1}</div>
+        <div>
+          <div class="qtype">${q.type==="mc"?"Selección múltiple":"Verdadero / Falso"}</div>
+          <div class="qtext">${q.q}</div>
+        </div>
+      </div>
+      <div class="options"></div>
+      <div class="explain">${q.exp}</div>
+    `;
+    const optWrap=card.querySelector(".options");
+    q.options.forEach((optText,oi)=>{
+      const opt=document.createElement("div");
+      opt.className="opt";
+      opt.dataset.idx=oi;
+      opt.innerHTML=`<div class="bullet">${String.fromCharCode(65+oi)}</div><div>${optText}</div>`;
+      opt.onclick=()=>selectOption(qi,oi);
+      optWrap.appendChild(opt);
+    });
+    qWrap.appendChild(card);
+  });
+}
+
+function selectOption(qi,oi){
+  if(graded) return;
+  const q = runtimeQ[qi];
+  if(q.answered) return;
+  q.answered = true;
+  q.chosen = oi;
+  const card = document.getElementById("q-"+qi);
+  card.classList.add("locked");
+  card.querySelectorAll(".opt").forEach((el,i)=>{
+    if(i===oi) el.classList.add("chosen");
+  });
+  updateProgress();
+}
+
+function updateProgress(){
+  const answeredCount = runtimeQ.filter(q=>q.answered).length;
+  progressText.textContent = answeredCount+" / "+runtimeQ.length+" respondidas";
+  progressBarInner.style.width = (answeredCount/runtimeQ.length*100)+"%";
+  if(answeredCount===runtimeQ.length){
+    gradeBtn.classList.add("enabled");
+  } else {
+    gradeBtn.classList.remove("enabled");
+  }
+}
+
+gradeBtn.onclick=()=>{
+  if(!gradeBtn.classList.contains("enabled") || graded) return;
+  graded = true;
+  let score=0;
+  runtimeQ.forEach((q,qi)=>{
+    const card=document.getElementById("q-"+qi);
+    card.classList.add("graded");
+    const isCorrect = q.chosen===q.correct;
+    if(isCorrect) score++;
+    card.classList.add(isCorrect?"correct":"incorrect");
+    card.querySelector(".qtext").insertAdjacentHTML("beforeend",
+      isCorrect? '<span class="badge-result ok">✓ CORRECTA</span>' : '<span class="badge-result bad">✗ INCORRECTA</span>');
+    card.querySelectorAll(".opt").forEach((el,i)=>{
+      if(i===q.correct) el.classList.add("correct-answer");
+      else if(i===q.chosen && !isCorrect) el.classList.add("wrong-answer");
+    });
+  });
+  showFinalScore(score);
+  progressText.textContent = "Examen calificado";
+  window.scrollTo({top:document.getElementById("finalScore").offsetTop-90, behavior:"smooth"});
+};
+
+function showFinalScore(score){
+  const total = runtimeQ.length;
+  const pct = Math.round(score/total*100);
+  let msg;
+  if(pct>=90) msg="🏆 Excelente — dominas la materia.";
+  else if(pct>=75) msg="✅ Muy bien — estás listo/a para el examen.";
+  else if(pct>=60) msg="📘 Aprobado — repasa los temas fallados.";
+  else msg="🔁 Necesitas repasar más antes del examen final.";
+  const box=document.getElementById("finalScore");
+  box.className="show";
+  box.innerHTML=`
+    <div class="big">${score} / ${total}</div>
+    <div class="msg">${pct}% — ${msg}</div>
+    <button id="retryBtn" onclick="location.reload()">↺ Reintentar Test</button>
+  `;
+}
+</script>
+</body>
+</html>
